@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Harmony;
+using HarmonyLib;
 using UnityEngine;
+using VTOLAPI;
 
 public class CameraMode_TGP : CameraMode
 {
@@ -18,7 +19,7 @@ public class CameraMode_TGP : CameraMode
 
     public override void Start(FlybyCameraMFDPage mfdPage)
     {
-        tgpMFD = VTOLAPI.GetPlayersVehicleGameObject().GetComponentInChildren<TargetingMFDPage>();
+        tgpMFD = VTAPI.GetPlayersVehicleGameObject().GetComponentInChildren<TargetingMFDPage>();
     }
 
     public override void LateUpdate(FlybyCameraMFDPage mfdPage)

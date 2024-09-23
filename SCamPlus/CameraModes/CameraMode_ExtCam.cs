@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Harmony;
+using HarmonyLib;
 using UnityEngine;
+using VTOLAPI;
 
 public class CameraMode_ExtCam : CameraMode
 {
@@ -28,7 +29,7 @@ public class CameraMode_ExtCam : CameraMode
         }
         else
         {
-            SCamPlus.extCamManager = VTOLAPI.GetPlayersVehicleGameObject().GetComponentInChildren<ExternalCamManager>();
+            SCamPlus.extCamManager = VTAPI.GetPlayersVehicleGameObject().GetComponentInChildren<ExternalCamManager>();
             mfdPage.behaviorText.text = "NoExtCam";
         }
     }

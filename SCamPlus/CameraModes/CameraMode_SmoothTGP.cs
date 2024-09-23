@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Harmony;
+using HarmonyLib;
 using UnityEngine;
+using VTOLAPI;
 
 public class CameraMode_SmoothTGP : CameraMode
 {
@@ -18,7 +19,7 @@ public class CameraMode_SmoothTGP : CameraMode
 
     public override void Start(FlybyCameraMFDPage mfdPage)
     {
-        tgpMFD = VTOLAPI.GetPlayersVehicleGameObject().GetComponentInChildren<TargetingMFDPage>();
+        tgpMFD = VTAPI.GetPlayersVehicleGameObject().GetComponentInChildren<TargetingMFDPage>();
     }
 
     public override void LateUpdate(FlybyCameraMFDPage mfdPage)
@@ -35,7 +36,7 @@ public class CameraMode_SmoothTGP : CameraMode
         }
         else
         {
-            SCamPlus.tgpMFD = VTOLAPI.GetPlayersVehicleGameObject().GetComponentInChildren<TargetingMFDPage>();
+            SCamPlus.tgpMFD = VTAPI.GetPlayersVehicleGameObject().GetComponentInChildren<TargetingMFDPage>();
             if (mfdPage.weaponManager.opticalTargeter != null)
             {
                 mfdPage.flybyCam.transform.position = mfdPage.weaponManager.opticalTargeter.sensorTurret.pitchTransform.position;

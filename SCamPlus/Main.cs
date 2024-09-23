@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,10 +7,15 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
-using Harmony;
+using HarmonyLib;
 using System.Reflection;
+using ModLoader;
+using ModLoader.Framework;
+using ModLoader.Framework.Attributes;
+using VTOLAPI;
 
-public class SCamPlus : VTOLMOD
+[ItemId("CHEESE.SCAMPLUS")]
+public class SCamPlus : VtolMod
 {
     public enum SpectatorBehaviorsPlus
     {
@@ -113,22 +119,21 @@ public class SCamPlus : VTOLMOD
     public static Vector3D position;
 
     public static List<CameraMode> cameraModes;
-    public static Settings settings;
-
-    public override void ModLoaded()
+    //public static Settings settings;
+    
+    public string ModFolder;
+    private void Awake()
     {
-        HarmonyInstance harmony = HarmonyInstance.Create("cheese.SCam+");
-        harmony.PatchAll(Assembly.GetExecutingAssembly());
-
-        base.ModLoaded();
-        VTOLAPI.SceneLoaded += SceneLoaded;
-        VTOLAPI.MissionReloaded += MissionReloaded;
+        ModFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        
+        VTAPI.SceneLoaded += SceneLoaded;
+        VTAPI.MissionReloaded += MissionReloaded;
 
         //ammountOfModes = Enum.GetValues(typeof(SpectatorBehaviorsPlus)).Length;
 
         cameraModes = new List<CameraMode>();
-        settings = new Settings(this);
-        settings.CreateCustomLabel("S-Cam+ Settings");
+        //settings = new Settings(this);
+        /*settings.CreateCustomLabel("S-Cam+ Settings");
 
         settings.CreateCustomLabel("");
 
@@ -191,7 +196,7 @@ public class SCamPlus : VTOLMOD
 
         settings.CreateCustomLabel("Please feel free to @ me on the discord if");
         settings.CreateCustomLabel("you think of any more features I could add!");
-        VTOLAPI.CreateSettingsMenu(settings);
+        VTOLAPI.CreateSettingsMenu(settings);*/
 
         AddNewCameraMode(new CameraMode_AceCombat("ace", "AceCombat"));
         AddNewCameraMode(new CameraMode_TGP("tgp", "TGP"));
@@ -200,6 +205,11 @@ public class SCamPlus : VTOLMOD
         AddNewCameraMode(new CameraMode_ExtCam("ext", "ExtCam"));
         //AddNewCameraMode(new CameraMode_FreeCam("free", "FreeCam"));//scrapped cause it doesnt work
         AddNewCameraMode(new CameraMode_SmoothZoom("zoom", "SmoothZoom"));
+    }
+    
+    public override void UnLoad()
+    {
+        // Unloaded
     }
 
     public void trackMinTime_Setting(float newval)
@@ -248,12 +258,12 @@ public class SCamPlus : VTOLMOD
     }
 
     //This function is called every time a scene is loaded. this behaviour is defined in Awake().
-    void SceneLoaded(VTOLScenes scene)
+    void SceneLoaded(VTScenes scene)
     {
         switch (scene)
         {
-            case VTOLScenes.Akutan:
-            case VTOLScenes.CustomMapBase:
+            case VTScenes.Akutan:
+            case VTScenes.CustomMapBase:
                 StartCoroutine("SetupScene");
                 Cursor.visible = false;
                 break;
@@ -275,10 +285,10 @@ public class SCamPlus : VTOLMOD
             yield return null;
         }
 
-        aircrarftType = VTOLAPI.GetPlayersVehicleEnum();
+        aircrarftType = VTAPI.GetPlayersVehicleEnum();
 
-        tgpMFD = VTOLAPI.GetPlayersVehicleGameObject().GetComponentInChildren<TargetingMFDPage>();
-        player = VTOLAPI.GetPlayersVehicleGameObject().GetComponent<Actor>();
+        tgpMFD = VTAPI.GetPlayersVehicleGameObject().GetComponentInChildren<TargetingMFDPage>();
+        player = VTAPI.GetPlayersVehicleGameObject().GetComponent<Actor>();
 
         aceMaxDistance = Mathf.Tan((90 - aceFovRange.min) * Mathf.Deg2Rad) * 30;
     }
@@ -411,7 +421,7 @@ public class SCamPlus : VTOLMOD
             case UpType.GUp:
                 if (player != null)
                 {
-                    return (player.flightInfo.averagedAccel + Physics.gravity).normalized;
+                    return (player.flightInfo.acceleration + Physics.gravity).normalized;
                 }
                 break;
             case UpType.HeadUp:
